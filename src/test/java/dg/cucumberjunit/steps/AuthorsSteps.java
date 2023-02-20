@@ -1,5 +1,6 @@
 package dg.cucumberjunit.steps;
 
+import dg.cucumberjunit.TestContext;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,24 +16,27 @@ public class AuthorsSteps {
     @Autowired
     private TestRestTemplate restTemplate;
 
-    private String response;
+    @Autowired
+    TestContext context;
 
-    @When("I fetch authors at at {string}")
-    public void iFetchAuthorsAtAt(String uri) {
+//    private String response;
+
+    @When("I fetch authors at {string}")
+    public void iFetchAuthorsAt(String uri) {
         String url = uri;
-        System.out.println("url => " + url);
+        System.out.println("url 2 => " + url);
         ResponseEntity<String> responseEntity = restTemplate.exchange(
                 url,
                 HttpMethod.GET, null,
                 String.class
         );
 
-        response = responseEntity.getBody();
+        context.getScenarioContext().put("response",responseEntity.getBody());
     }
 
     @Then("I should get a response with {string} message")
     public void iShouldFindAuthors(String expectedMessage) {
 
-        assertEquals(expectedMessage, response);
+        assertEquals(expectedMessage, context.getScenarioContext().get("response"));
     }
 }
